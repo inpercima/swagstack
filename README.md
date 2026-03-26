@@ -2,7 +2,7 @@
 
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 
-[s]imple [w]eb [a]pp [a]ngular tem[plate]. A very simple template generator for angular webapps with different backends.
+[s]imple [w]eb [a]pp [a]ngular tem[plate]. An opinionated monorepo generator for Angular web apps with optional backends.
 
 Projects like [publicmedia](https://github.com/inpercima/publicmedia), [cryptocheck](https://github.com/inpercima/cryptocheck), [mittagstisch](https://github.com/inpercima/mittagstisch) or [run-and-fun](https://github.com/inpercima/run-and-fun) are build on it.
 
@@ -15,24 +15,15 @@ Therefore, I decided to write a small tool, which puts together all the necessar
 
 ### The goal
 
-With swaaplate, the goal should be to create an angular web app with one of four backends, one of two management tools and one of two js dependency manager.
-You can choose between `none` (means angular only), `nestjs`, `php`, `java` or `kt` as backend, `maven` or `gradle` as management tool and `npm` or `yarn` as js dependency manager.
+With swaaplate, the goal is to create an Angular monorepo app with one of the following presets:
+- `preset-angular-only` – Angular frontend only
+- `preset-angular-java` – Angular frontend + Java/Spring Boot backend skeleton
+- `preset-angular-php` – Angular frontend + PHP backend skeleton
 
 ## Prerequisites
 
-### Angular CLI
-
-* `@angular/cli 17.0.8` or higher
-
-### Nestjs CLI (if backend `nestjs` is used)
-
-* `@nestjs/cli 10.2.1` or higher
-
-### Node, npm or yarn
-
-* `node 20.9.0` or higher in combination with
-  * `npm 10.1.0` or higher or
-  * `yarn 1.22.19` or higher, used in this repository
+- Node.js `>= 20.9.0`
+- pnpm, npm, or yarn
 
 ## Getting started
 
@@ -41,19 +32,74 @@ You can choose between `none` (means angular only), `nestjs`, `php`, `java` or `
 git clone https://github.com/inpercima/swaaplate
 cd swaaplate
 
-# copy src/template/swaaplate.default.json to swaaplate.json
-cp src/template/swaaplate.default.json swaaplate.json
+# install dependencies
+npm install
 
-# install tools
-yarn
-
-# change data in swaaplate.json (see ./docs/configuration.md) and run swaaplate with one argument for the workspace path
-./swaaplate.js /absolute/path/to/workspace
+# build the CLI
+npm run build
 ```
 
-## Documentation
+## Usage
 
-You can find all the documentation under [./docs](./docs/index.md).
+### Interactive mode
+
+```bash
+npm run dev -- init
+# or after build:
+node dist/cli/index.js init
+```
+
+The CLI will prompt you for:
+1. Project name (folder)
+2. Preset (angular-only / angular-java / angular-php)
+3. Package manager (pnpm / npm / yarn)
+
+### Non-interactive mode
+
+```bash
+# Angular only (using pnpm)
+node dist/cli/index.js init my-app --preset preset-angular-only --pm pnpm --yes
+
+# Angular + Java backend skeleton
+node dist/cli/index.js init my-app --preset preset-angular-java --pm pnpm --yes
+
+# Angular + PHP backend skeleton
+node dist/cli/index.js init my-app --preset preset-angular-php --pm pnpm --yes
+```
+
+### Available options
+
+| Option | Description | Default |
+|---|---|---|
+| `--preset <preset>` | `preset-angular-only` \| `preset-angular-java` \| `preset-angular-php` | prompted |
+| `--pm <pm>` | `pnpm` \| `npm` \| `yarn` | `pnpm` |
+| `--yes`, `-y` | Skip prompts where possible | `false` |
+| `--force`, `-f` | Overwrite existing non-empty target directory | `false` |
+
+## Generated project structure
+
+```
+<name>/
+├── apps/
+│   ├── frontend/          # Angular project (via Angular CLI)
+│   └── backend/           # Java or PHP skeleton (if preset includes backend)
+├── package.json           # root workspace config
+├── pnpm-workspace.yaml    # (if pnpm selected)
+└── README.md
+```
+
+## Development
+
+```bash
+# run CLI in dev mode (no build needed)
+npm run dev -- init my-app --preset preset-angular-only --pm pnpm --yes
+
+# build
+npm run build
+
+# run built CLI
+npm start -- init
+```
 
 ## Changelog
 

@@ -1,17 +1,26 @@
 {
   "author": "Marcel Jänicke",
+  "bin": {
+    "swaaplate": "dist/cli/index.js"
+  },
   "contributors": [
     {
       "name": "Marcel Jänicke",
       "email": "inpercima@gmail.com"
     }
   ],
+  "dependencies": {
+    "@inquirer/prompts": "^8.3.2",
+    "commander": "^14.0.3",
+    "execa": "^9.6.1",
+    "fs-extra": "^11.3.4"
+  },
   "description": "[s]imple [w]eb [a]pp [a]ngular tem[plate]. A very simple template generator for angular webapps with different backends.",
   "devDependencies": {
-    "axios": "1.8.2",
-    "light-js": "inpercima/light-js#v1.1.7",
-    "shelljs": "0.8.5",
-    "uppercamelcase": "3.0.0"
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
   },
   "engines": {
     "node": ">=20.9.0"
@@ -20,5 +29,11 @@
   "name": "swaaplate",
   "private": true,
   "repository": "https://github.com/inpercima/swaaplate",
-  "version": "2.5.4-SNAPSHOT"
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js"
+  },
+  "type": "module",
+  "version": "3.0.0-SNAPSHOT"
 }
