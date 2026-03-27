@@ -1,8 +1,8 @@
-# swaaplate
+# swagstack
 
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 
-[s]imple [w]eb [a]pp [a]ngular tem[plate]. An opinionated monorepo generator for Angular web apps with optional backends.
+An [s]mart [w]eb [a]pps monorepo [g]enerator for Angular with optional backend - full[stack] included.
 
 Projects like [publicmedia](https://github.com/inpercima/publicmedia), [cryptocheck](https://github.com/inpercima/cryptocheck), [mittagstisch](https://github.com/inpercima/mittagstisch) or [run-and-fun](https://github.com/inpercima/run-and-fun) are build on it.
 

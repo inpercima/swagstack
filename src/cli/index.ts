@@ -5,13 +5,13 @@ import figlet from 'figlet';
 import { initCommand } from './init.js';
 
 console.log(chalk.cyan(figlet.textSync('swagstack')));
-console.log(chalk.gray('A [s]mart [w]eb [a]pps [g]enerator, full[stack] included.'));
+console.log(chalk.gray('An [s]mart [w]eb [a]pps monorepo [g]enerator for Angular with optional backend - full[stack] included.'));
 console.log('');
 
 const program = new Command();
 program
-  .name('swaaplate')
-  .description('A [s]mart [w]eb [a]pps [g]enerator, full[stack] included.')
+  .name('swagstack')
+  .description('An [s]mart [w]eb [a]pps monorepo [g]enerator for Angular with optional backend - full[stack] included.')
   .version('3.0.0-SNAPSHOT');
 program.addCommand(initCommand());
 
