@@ -12,3 +12,6 @@ trim_trailing_whitespace = true
 
 [*.md]
 indent_size = 4
+
+[*.ts]
+quote_type = single
