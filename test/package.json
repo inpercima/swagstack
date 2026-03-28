@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:frontend": "pnpm --prefix apps/frontend start"
+  }
+}

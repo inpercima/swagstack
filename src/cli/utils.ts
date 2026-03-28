@@ -1,3 +1,5 @@
+import fs from 'fs-extra';
+import Handlebars from 'handlebars';
 import { PACKAGE_MANAGERS, PackageManager, Preset, PRESETS } from './types.js';
 
 export function resolvePreset(value?: string): Preset | undefined {
@@ -14,4 +16,13 @@ export function resolvePm(value?: string): PackageManager | undefined {
     `Unknown package manager "${value}". Valid options: ${PACKAGE_MANAGERS.join(', ')}`,
   );
   process.exit(1);
+}
+
+export async function generate(templatePath: string, targetPath: string, data: any) {
+  const template = await fs.readFile(templatePath, 'utf-8');
+  const compiled = Handlebars.compile(template);
+
+  const result = compiled(data);
+
+  await fs.outputFile(targetPath, result);
 }

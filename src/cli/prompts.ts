@@ -1,4 +1,4 @@
-import { input, select } from '@inquirer/prompts';
+import { confirm, input, select } from '@inquirer/prompts';
 import { PackageManager, Preset } from './types.js';
 
 /** Prompts the user to enter a project name. */
@@ -40,5 +40,13 @@ export function choosePackageManager(): Promise<PackageManager> {
       { name: 'npm', value: 'npm' },
       { name: 'yarn', value: 'yarn' },
     ],
+  });
+}
+
+/** Prompts the user to confirm whether to continue when the target directory already exists and is not empty. */
+export function askContinueInNonEmptyDir(dirName: string): Promise<boolean> {
+  return confirm({
+    message: `Directory "${dirName}" already exists and is not empty. Continue anyway?`,
+    default: false,
   });
 }

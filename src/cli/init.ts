@@ -1,25 +1,50 @@
-import { confirm } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { execa } from 'execa';
 import fs from 'fs-extra';
 import path from 'node:path';
-import { askProjectName, choosePackageManager, choosePreset } from './prompts.js';
+import {
+  askContinueInNonEmptyDir,
+  askProjectName,
+  choosePackageManager,
+  choosePreset,
+} from './prompts.js';
 import type { InitOptions, PackageManager, Preset } from './types.js';
 import { resolvePm, resolvePreset } from './utils.js';
 
-async function run(cmd: string, args: string[], cwd: string): Promise<void> {
-  await execa(cmd, args, { cwd, stdio: 'inherit' });
-}
-
-async function ensureEmptyOrForce(dir: string, force: boolean): Promise<void> {
-  const exists = await fs.pathExists(dir);
-  if (!exists) return;
-  const entries = await fs.readdir(dir);
-  if (entries.length === 0) return;
-  if (!force) {
-    throw new Error(`Target directory is not empty: ${dir}\nUse --force to overwrite.`);
+/**
+ *  Ensures that the target directory exists and is empty.
+ *  If the directory already exists and is not empty, prompts the user to confirm whether to continue.
+ *  Returns true if the directory is ready for use, false if the user aborted.
+ **/
+async function ensureCleanEmptyDir(dir: string, projectName: string): Promise<boolean> {
+  if (await fs.pathExists(dir)) {
+    const entries = await fs.readdir(dir);
+    if (entries.length > 0) {
+      const ok = await askContinueInNonEmptyDir(projectName);
+      if (!ok) {
+        console.log('Aborted.');
+        return false;
+      }
+    }
   }
   await fs.emptyDir(dir);
+  return true;
+}
+
+/** Logs the starting info for the initialization process. */
+function logStarting(repoRoot: string, preset: Preset, pm: PackageManager): void {
+  console.log('');
+  console.log('🚀 Starting swagstack project initialization...');
+  console.log('');
+  console.log(`Creating monorepo: ${repoRoot}`);
+  console.log(`Preset:            ${preset}`);
+  console.log(`Package Manager:   ${pm}`);
+  console.log('');
+}
+
+/** Runs a command in a child process, inheriting stdio. */
+async function run(cmd: string, args: string[], cwd: string): Promise<void> {
+  await execa(cmd, args, { cwd, stdio: 'inherit' });
 }
 
 async function writeRootFiles(repoRoot: string, pm: PackageManager): Promise<void> {
@@ -43,7 +68,7 @@ async function writeRootFiles(repoRoot: string, pm: PackageManager): Promise<voi
     [
       `# ${name}`,
       '',
-      'Generated with [swaaplate](https://github.com/inpercima/swaaplate).',
+      'Generated with [swagstack](https://github.com/inpercima/swagstack).',
       '',
       '## Next steps',
       '',
@@ -79,6 +104,17 @@ async function createAngularFrontend(repoRoot: string, pm: PackageManager): Prom
     repoRoot,
   );
 }
+
+/**
+ * 
+ * onst params = [
+      '--interactive=false --skip-install=true --style=css',
+      `--package-manager=${swHelper.isYarn() ? swProjectConst.YARN : swProjectConst.NPM}`,
+      `--directory=${projectName}`,
+      `--prefix=${frontendConfig.prefix}`,
+      `--routing=${swHelper.isRouting()}`
+    ];
+ */
 
 async function createJavaBackendSkeleton(repoRoot: string): Promise<void> {
   const backendDir = path.join(repoRoot, 'apps', 'backend');
@@ -126,6 +162,32 @@ async function createPhpBackendSkeleton(repoRoot: string): Promise<void> {
   );
 }
 
+async function startInitialization(
+  repoRoot: string,
+  projectName: string,
+  preset: Preset,
+  pm: PackageManager,
+): Promise<void> {
+  logStarting(repoRoot, preset, pm);
+
+  await writeRootFiles(repoRoot, pm);
+  await createAngularFrontend(repoRoot, pm);
+
+  if (preset === 'preset-angular-java') {
+    await createJavaBackendSkeleton(repoRoot);
+  } else if (preset === 'preset-angular-php') {
+    await createPhpBackendSkeleton(repoRoot);
+  }
+
+  console.log('');
+  console.log('✔ Done! Next steps:');
+  console.log('');
+  console.log(`  cd ${projectName}`);
+  console.log(`  ${pm} install`);
+  console.log(`  ${pm} run dev:frontend`);
+  console.log('');
+}
+
 export function initCommand(): Command {
   const cmd = new Command('init');
   cmd
@@ -139,48 +201,14 @@ export function initCommand(): Command {
 
       const repoRoot = path.resolve(process.cwd(), projectName);
 
-      if (!opts.force && (await fs.pathExists(repoRoot))) {
-        const entries = await fs.readdir(repoRoot);
-        if (entries.length > 0) {
-          const ok = opts.yes
-            ? false
-            : await confirm({
-                message: `Directory "${projectName}" already exists and is not empty. Continue anyway?`,
-                default: false,
-              });
-          if (!ok) {
-            console.log('Aborted.');
-            return;
-          }
-        }
+      if (await ensureCleanEmptyDir(repoRoot, projectName)) {
+        startInitialization(repoRoot, projectName, preset, pm).catch((err) => {
+          console.error('Initialization failed:', err);
+          process.exit(1);
+        });
+      } else {
+        return;
       }
-
-      console.log('');
-      console.log(`Creating monorepo: ${repoRoot}`);
-      console.log(`  Preset : ${preset}`);
-      console.log(`  PM     : ${pm}`);
-      console.log('');
-
-      await fs.ensureDir(repoRoot);
-      await ensureEmptyOrForce(repoRoot, opts.force ?? false);
-      await fs.ensureDir(path.join(repoRoot, 'apps'));
-
-      await writeRootFiles(repoRoot, pm);
-      await createAngularFrontend(repoRoot, pm);
-
-      if (preset === 'preset-angular-java') {
-        await createJavaBackendSkeleton(repoRoot);
-      } else if (preset === 'preset-angular-php') {
-        await createPhpBackendSkeleton(repoRoot);
-      }
-
-      console.log('');
-      console.log('✔ Done! Next steps:');
-      console.log('');
-      console.log(`  cd ${projectName}`);
-      console.log(`  ${pm} install`);
-      console.log(`  ${pm} run dev:frontend`);
-      console.log('');
     });
 
   return cmd;
