@@ -7,9 +7,9 @@ import {
   askProjectName,
   choosePackageManager,
   choosePreset,
-} from './prompts.js';
-import type { InitOptions, PackageManager, Preset } from './types.js';
-import { resolvePm, resolvePreset } from './utils.js';
+} from '../utils/prompts.js';
+import type { InitOptions, PackageManager, Preset } from '../utils/types.js';
+import { resolvePm, resolvePreset } from '../utils/utils.js';
 
 /**
  *  Ensures that the target directory exists and is empty.
@@ -47,10 +47,9 @@ async function run(cmd: string, args: string[], cwd: string): Promise<void> {
   await execa(cmd, args, { cwd, stdio: 'inherit' });
 }
 
-async function writeRootFiles(repoRoot: string, pm: PackageManager): Promise<void> {
-  const name = path.basename(repoRoot);
+async function writeRootFiles(repoRoot: string, projectName: string, pm: PackageManager): Promise<void> {
   const rootPkg = {
-    name,
+    name: projectName,
     private: true,
     workspaces: ['apps/*'],
     scripts: {
@@ -170,7 +169,7 @@ async function startInitialization(
 ): Promise<void> {
   logStarting(repoRoot, preset, pm);
 
-  await writeRootFiles(repoRoot, pm);
+  await writeRootFiles(repoRoot, projectName, pm);
   await createAngularFrontend(repoRoot, pm);
 
   if (preset === 'preset-angular-java') {
@@ -195,10 +194,10 @@ export function initCommand(): Command {
     .option('--preset <preset>', 'preset-angular-only | preset-angular-java | preset-angular-php')
     .option('--pm <pm>', 'pnpm | npm | yarn (default: pnpm)')
     .action(async (name: string | undefined, opts: InitOptions) => {
+
       const projectName = name ?? (await askProjectName());
       const preset: Preset = resolvePreset(opts.preset) ?? (await choosePreset());
       const pm: PackageManager = resolvePm(opts.pm) ?? (await choosePackageManager());
-
       const repoRoot = path.resolve(process.cwd(), projectName);
 
       if (await ensureCleanEmptyDir(repoRoot, projectName)) {

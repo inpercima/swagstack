@@ -11,6 +11,6 @@
     "sourceMap": true,
     "types": ["node"]
   },
-  "include": ["src/cli/**/*.ts"],
+  "include": ["src/cli/**/*.ts", "src/utils/utils.ts", "src/commands/init.ts", "src/utils/types.ts", "src/utils/prompts.ts", "src/index.ts"],
   "exclude": ["src/template/**", "node_modules"]
 }

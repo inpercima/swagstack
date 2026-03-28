@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import figlet from 'figlet';
-import { initCommand } from './init.js';
+import { initCommand } from './commands/init.js';
 
 console.log(chalk.cyan(figlet.textSync('swagstack')));
 console.log(chalk.gray('An [s]mart [w]eb [a]pps monorepo [g]enerator for Angular with optional backend - full[stack] included.'));
