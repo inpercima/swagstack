@@ -1,5 +1,12 @@
-import { confirm, input, select } from '@inquirer/prompts';
-import { PackageManager, Preset } from './types.js';
+import { checkbox, confirm, input, select } from '@inquirer/prompts';
+import {
+  DESIGN_SYSTEMS,
+  DesignSystem,
+  PACKAGE_MANAGERS,
+  PackageManager,
+  Preset,
+  PRESETS,
+} from './types.js';
 
 /** Prompts the user to enter a project name. */
 export function askProjectName(): Promise<string> {
@@ -13,19 +20,19 @@ export function choosePreset(): Promise<Preset> {
     choices: [
       {
         name: 'Angular only',
-        value: 'preset-angular-only',
+        value: PRESETS.ANGULAR_ONLY,
       },
       {
         name: 'Angular + Java',
-        value: 'preset-angular-java',
+        value: PRESETS.ANGULAR_JAVA,
       },
       {
         name: 'Angular + PHP',
-        value: 'preset-angular-php',
+        value: PRESETS.ANGULAR_PHP,
       },
       {
         name: 'Angular + Nest.js',
-        value: 'preset-angular-nestjs',
+        value: PRESETS.ANGULAR_NESTJS,
       },
     ],
   });
@@ -36,9 +43,24 @@ export function choosePackageManager(): Promise<PackageManager> {
   return select<PackageManager>({
     message: 'Choose a package manager',
     choices: [
-      { name: 'pnpm  (recommended)', value: 'pnpm' },
-      { name: 'npm', value: 'npm' },
-      { name: 'yarn', value: 'yarn' },
+      { name: `${PACKAGE_MANAGERS.PNPM} (recommended)`, value: PACKAGE_MANAGERS.PNPM },
+      { name: PACKAGE_MANAGERS.NPM, value: PACKAGE_MANAGERS.NPM },
+      { name: PACKAGE_MANAGERS.YARN, value: PACKAGE_MANAGERS.YARN },
+    ],
+  });
+}
+
+export function chooseDesignSystem(): Promise<DesignSystem[]> {
+  return checkbox<DesignSystem>({
+    message: 'Choose a design system (you can select multiple)',
+    choices: [
+      { name: 'None', value: DESIGN_SYSTEMS.NONE },
+      { name: 'Tailwind CSS', value: DESIGN_SYSTEMS.TAILWIND_CSS },
+      { name: 'DaisyUI', value: DESIGN_SYSTEMS.DAISYUI },
+      { name: 'ShadCN UI', value: DESIGN_SYSTEMS.SHADCN_UI },
+      { name: 'Bootstrap', value: DESIGN_SYSTEMS.BOOTSTRAP },
+      { name: 'Clarity Design', value: DESIGN_SYSTEMS.CLARITY_DESIGN },
+      { name: 'Angular Material', value: DESIGN_SYSTEMS.ANGULAR_MATERIAL },
     ],
   });
 }
@@ -48,5 +70,19 @@ export function askContinueInNonEmptyDir(dirName: string): Promise<boolean> {
   return confirm({
     message: `Directory "${dirName}" already exists and is not empty. Continue anyway?`,
     default: false,
+  });
+}
+
+export function askUseCypress(): Promise<boolean> {
+  return confirm({
+    message: 'Do you want to include Cypress for end-to-end testing?',
+    default: true,
+  });
+}
+
+export function askUseCI(): Promise<boolean> {
+  return confirm({
+    message: 'Do you want to set up GitHub Actions CI workflow?',
+    default: true,
   });
 }

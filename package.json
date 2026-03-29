@@ -1,7 +1,7 @@
 {
   "author": "Marcel Hendrich",
   "bin": {
-    "swagstack": "dist/cli/index.js"
+    "swagstack": "dist/index.js"
   },
   "contributors": [
     {
@@ -11,10 +11,10 @@
   ],
   "dependencies": {
     "@inquirer/prompts": "8.3.2",
-    "commander": "14.0.3",
     "chalk": "5.6.2",
-    "figlet": "1.11.0",
+    "commander": "14.0.3",
     "execa": "9.6.1",
+    "figlet": "1.11.0",
     "fs-extra": "11.3.4",
     "handlebars": "4.7.9"
   },
@@ -35,9 +35,9 @@
   "private": true,
   "repository": "https://github.com/inpercima/swagstack",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx src/cli/index.ts",
-    "start": "node dist/cli/index.js"
+    "build": "tsc && node scripts/copy-templates.js",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
   },
   "type": "module",
   "version": "3.0.0-SNAPSHOT"
