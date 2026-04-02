@@ -1,24 +1,44 @@
 {
-  "author": "Marcel Jänicke",
+  "author": "Marcel Hendrich",
+  "bin": {
+    "swagstack": "dist/index.js"
+  },
   "contributors": [
     {
-      "name": "Marcel Jänicke",
+      "name": "Marcel Hendrich",
       "email": "inpercima@gmail.com"
     }
   ],
-  "description": "[s]imple [w]eb [a]pp [a]ngular tem[plate]. A very simple template generator for angular webapps with different backends.",
+  "dependencies": {
+    "@inquirer/prompts": "8.3.2",
+    "chalk": "5.6.2",
+    "commander": "14.0.3",
+    "execa": "9.6.1",
+    "figlet": "1.11.0",
+    "fs-extra": "11.3.4",
+    "handlebars": "4.7.9"
+  },
+  "description": "An [s]mart [w]eb [a]pps monorepo [g]enerator for Angular with optional backend - full[stack] included.",
   "devDependencies": {
-    "axios": "1.8.2",
-    "light-js": "inpercima/light-js#v1.1.7",
-    "shelljs": "0.8.5",
-    "uppercamelcase": "3.0.0"
+    "@types/fs-extra": "11.0.4",
+    "@types/node": "25.5.0",
+    "tsx": "4.21.0",
+    "typescript": "6.0.2",
+    "prettier": "3.8.1"
   },
   "engines": {
     "node": ">=20.9.0"
   },
   "license": "MIT",
-  "name": "swaaplate",
+  "name": "swagstack",
+  "packageManager": "pnpm@10.32.0",
   "private": true,
-  "repository": "https://github.com/inpercima/swaaplate",
-  "version": "2.5.4-SNAPSHOT"
+  "repository": "https://github.com/inpercima/swagstack",
+  "scripts": {
+    "build": "tsc && node scripts/copy-templates.js",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "type": "module",
+  "version": "3.0.0-SNAPSHOT"
 }
